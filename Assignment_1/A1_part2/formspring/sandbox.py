@@ -1,4 +1,80 @@
 import hashlib
+"""
+raw_pw = 'a1b2c3'
+hashed_pw = hashlib.sha256(bytes(raw_pw, 'UTF-8')).hexdigest()
+print(hashed_pw)
 
-hash1234 = hashlib.sha256(b'1234')
-print(len(hash1234.hexdigest()))
+with open('Assignment_1/A1_part2/formspring/formspring.txt', 'r') as pw_file:
+    lines = pw_file.readlines()
+    for line in lines:
+        if line.strip() == hashed_pw:
+            print('Found: ' + line.strip() + ' = ' + hashed_pw)
+            break
+"""
+
+
+def get_pw_dict(pw_fn):
+
+    """
+    takes input file path, outputs raw_pws_dict where key = SHA1 hashed
+    password from file value = plain text password
+    """
+
+    raw_pws_dict = dict()
+
+    with open(pw_fn, 'r') as pw_file:
+        pws = pw_file.readlines()
+        for pw in pws:
+            salt = "1111"
+            hashed_pw = hashlib.sha256(salt.encode('UTF-8') + pw.encode('UTF-8'))
+            raw_pws_dict[hashed_pw.hexdigest()] = pw.strip()
+
+    return raw_pws_dict
+
+
+def check_linkedin_pws(formspring_file, raw_pws_dict):
+
+    """
+    takes linkedin pw file and raw_pws_dict from get_pw_dict, checks
+    linkedin passwords against hashed passwords in raw_pws_dict.
+    Outputs list of matching passwords where each element is formatted
+    as '<hashed pw> <plain text pw>'
+    """
+
+    result = list()
+
+    with open(formspring_file, 'r') as pw_file:
+        lines = pw_file.readlines()
+        for line in lines:
+            if line.strip() in raw_pws_dict:
+                result.append(line.strip() + ' ' + raw_pws_dict[line.strip()])
+                print("Found one!")
+                continue
+
+    return result
+
+
+def print_to_file(out_fn, pw_list):
+
+    """
+    takes an output file name and a list of passwords, writes the list
+    to the output file
+    """
+
+    with open(out_fn, 'w') as outfile:
+        for pw in pw_list[:100]:  # limit submission to 100 lines
+            outfile.write(pw + '\n')
+
+
+def main():
+    guesses_file = 'Assignment_1/A1_part2/guesses.txt'
+    formspring_file = 'Assignment_1/A1_part2/formspring/formspring.txt'
+    outfile = 'Assignment_1/A1_part2/formspring/formspring_submission.txt'
+
+    raw_pws_dict = get_pw_dict(guesses_file)
+    result = check_linkedin_pws(formspring_file, raw_pws_dict)
+    print_to_file(outfile, result)
+
+
+if __name__ == '__main__':
+    main()
