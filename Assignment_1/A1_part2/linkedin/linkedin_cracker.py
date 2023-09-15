@@ -53,11 +53,11 @@ def print_to_file(out_fn, pw_list):
 
 
 def main():
-    pw_file = 'Assignment_1/A1_part2/guesses.txt'
+    guesses_file = 'Assignment_1/A1_part2/guesses.txt'
     linkedin_file = 'Assignment_1/A1_part2/linkedin/SHA1.txt'
     outfile = 'Assignment_1/A1_part2/linkedin/linkedin_submission.txt'
 
-    raw_pws_dict = get_pw_dict(pw_file)
+    raw_pws_dict = get_pw_dict(guesses_file)
     result = check_linkedin_pws(linkedin_file, raw_pws_dict)
     print_to_file(outfile, result)
 
