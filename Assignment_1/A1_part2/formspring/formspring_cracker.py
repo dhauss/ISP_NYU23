@@ -1,23 +1,11 @@
 import hashlib
-"""
-raw_pw = 'a1b2c3'
-hashed_pw = hashlib.sha256(bytes(raw_pw, 'UTF-8')).hexdigest()
-print(hashed_pw)
-
-with open('Assignment_1/A1_part2/formspring/formspring.txt', 'r') as pw_file:
-    lines = pw_file.readlines()
-    for line in lines:
-        if line.strip() == hashed_pw:
-            print('Found: ' + line.strip() + ' = ' + hashed_pw)
-            break
-"""
 
 
 def get_pw_dict(pw_fn):
 
     """
-    takes input file path, outputs raw_pws_dict where key = SHA1 hashed
-    password from file value = plain text password
+    takes input file path, outputs raw_pws_dict where key = salted SHA256
+    hashed password from file, value = plain text password
     """
 
     raw_pws_dict = dict()
@@ -25,9 +13,11 @@ def get_pw_dict(pw_fn):
     with open(pw_fn, 'r') as pw_file:
         pws = pw_file.readlines()
         for pw in pws:
-            salt = "1111"
-            hashed_pw = hashlib.sha256(salt.encode('UTF-8') + pw.encode('UTF-8'))
-            raw_pws_dict[hashed_pw.hexdigest()] = pw.strip()
+            for salt in range(0, 100):
+                salt = str(salt)
+                hashed_pw = hashlib.sha256(bytes(salt, 'UTF-8')
+                                           + bytes(pw.strip(), 'UTF-8'))
+                raw_pws_dict[hashed_pw.hexdigest()] = pw.strip()
 
     return raw_pws_dict
 
@@ -35,10 +25,10 @@ def get_pw_dict(pw_fn):
 def check_linkedin_pws(formspring_file, raw_pws_dict):
 
     """
-    takes linkedin pw file and raw_pws_dict from get_pw_dict, checks
-    linkedin passwords against hashed passwords in raw_pws_dict.
+    takes formspring pw file and raw_pws_dict from get_pw_dict, checks
+    formspring passwords against hashed passwords in raw_pws_dict.
     Outputs list of matching passwords where each element is formatted
-    as '<hashed pw> <plain text pw>'
+    as '<salted hashed pw> <plain text pw>'
     """
 
     result = list()
@@ -48,7 +38,6 @@ def check_linkedin_pws(formspring_file, raw_pws_dict):
         for line in lines:
             if line.strip() in raw_pws_dict:
                 result.append(line.strip() + ' ' + raw_pws_dict[line.strip()])
-                print("Found one!")
                 continue
 
     return result

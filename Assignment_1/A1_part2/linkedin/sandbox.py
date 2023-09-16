@@ -3,7 +3,7 @@ import hashlib
 # import itertools
 
 hashed_pw = hashlib.sha1(b'password').hexdigest()
-# print(hashed_pw)
+print(len(hashed_pw))
 hashed_pw = '00000' + hashed_pw[5:]
 # print(hashed_pw)
 # print('test: ' + hashlib.sha1(b'a1b2c3').hexdigest())
