@@ -40,10 +40,11 @@ class LPFile():
             self.validate_offset(offset)
             if(self.pending_data):
                 self.LPfile.writeat(self.pending_data, self.pending_offset)
+            self.pending_data = data
+            self.pending_offset = offset
         finally:
             self.lock.release()
-        self.pending_data = data
-        self.pending_offset = offset
+
 
     def undo(self):
         self.pending_data = None
