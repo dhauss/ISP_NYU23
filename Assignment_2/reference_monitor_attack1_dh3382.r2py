@@ -1,3 +1,7 @@
+"""
+Test basic undo functionality
+"""
+
 # clean up if the file exists.
 if "testfile.txt" in listfiles():
   removefile("testfile.txt")
@@ -19,3 +23,5 @@ assert("12345678" == myfile.readat(8,0))
 
 # close the file
 myfile.close()
+
+log('1 passed\n')

@@ -23,28 +23,25 @@ class LPFile():
         self.LPfile = openfile(filename, create)
         self.pending_data = None
         self.pending_offset = None
+        self.w_lock = createlock()
+        self.r_lock = createlock()
 
     def readat(self, bytes, offset):
-        self.lock = createlock()
-        self.lock.acquire(True)
+        self.r_lock.acquire(True)
         try:
-            validate_offset(offset)
             return self.LPfile.readat(bytes, offset)
         finally:
-            self.lock.release()
+            self.r_lock.release()
 
     def writeat(self, data, offset):
-        self.lock = createlock()
-        self.lock.acquire(True)
+        self.w_lock.acquire(True)
         try:
-            self.validate_offset(offset)
             if(self.pending_data):
                 self.LPfile.writeat(self.pending_data, self.pending_offset)
             self.pending_data = data
             self.pending_offset = offset
         finally:
-            self.lock.release()
-
+            self.w_lock.release()
 
     def undo(self):
         self.pending_data = None
@@ -52,14 +49,9 @@ class LPFile():
 
     def close(self):
         if(self.pending_data):
-            self.writeat(self, None, None)
+            self.writeat(None, None)
         self.LPfile.close()
 
-    def validate_offset(self, offset):
-        if offset < 0:
-            raise RepyArgumentError
-        elif offset > len(self.LPfile.readat(None, 0)):
-            raise SeekPastEndOfFileError
 
 def LPopenfile(filename, create):
     return LPFile(filename, create)
