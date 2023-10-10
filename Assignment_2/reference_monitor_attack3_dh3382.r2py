@@ -27,4 +27,4 @@ assert("12345678" == myfile.readat(8,0))
 # close the file
 myfile.close()
 
-log('3 complete\n')
+log('3 passed\n')

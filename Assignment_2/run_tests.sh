@@ -1,0 +1,6 @@
+#! /bin/bash
+
+python repy.py restrictions.default encasementlib.r2py reference_monitor_dh3382.r2py reference_monitor_attack1_dh3382.r2py
+python repy.py restrictions.default encasementlib.r2py reference_monitor_dh3382.r2py reference_monitor_attack2_dh3382.r2py
+python repy.py restrictions.default encasementlib.r2py reference_monitor_dh3382.r2py reference_monitor_attack3_dh3382.r2py
+python repy.py restrictions.default encasementlib.r2py reference_monitor_dh3382.r2py reference_monitor_attack4_dh3382.r2py
