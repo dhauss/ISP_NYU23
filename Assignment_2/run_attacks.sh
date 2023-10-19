@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for referencemonitor in reference_monitor_c*
+for referencemonitor in reference_monitor_*
 do
     echo $referencemonitor under test
     for testcase in dh3382_*
