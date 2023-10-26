@@ -1,0 +1,27 @@
+"""
+test writing to beyond EOF, SeekPastEndOfFileError should be raised
+"""
+
+try:
+    #clean up if the file exists.
+    if "testfile.txt" in listfiles():
+        removefile("testfile.txt")
+
+    #create a file
+    myfile=openfile("testfile.txt",True)
+
+    # write to negative offset 
+    myfile.writeat("12345678",1000000)
+
+    # trigger write to invalid offset
+    myfile.close()
+except SeekPastEndOfFileError:
+    pass
+except Exception as e:
+    # invalid exception raised
+    log(type(e))
+    log('\n')
+    log('failed testcase 6: should raise SeekPastEndOfFileError\n')
+else:
+    # no exception raised
+    log('failed testcase 6: should raise SeekPastEndOfFileError\n')
