@@ -23,9 +23,12 @@ class LPFile():
         self.LPfile = openfile(filename, create)
         self.pending_data = None
         self.pending_offset = None
+        # track file state
         self.is_open = True
+        # track file length and previous length for undo call
         self.file_length = len(self.LPfile.readat(None,0))
         self.prev_length = self.file_length
+        # write lock to avoid race conditions, notably regarding file state and length
         self.w_lock = createlock()
 
     def readat(self, bytes, offset):
@@ -34,14 +37,19 @@ class LPFile():
     def writeat(self, data, offset):
         self.w_lock.acquire(True)
         try:
+            # check valid offset and data 
             if(offset < 0) or (type(offset) != int) or (type(data) != str):
                 raise RepyArgumentError
+            # check if file is already closed
             if(self.is_open == False):
                 raise FileClosedError
+            # check that offset does not extend past EOF
             if(offset > self.file_length):
                 raise SeekPastEndOfFileError
+            # write to file if pending data exists
             if(self.pending_data):
                 self.LPfile.writeat(self.pending_data, self.pending_offset)
+            # update file length if pending data extends file length
             if(offset + len(data) >= self.file_length):
                 self.prev_length = self.file_length
                 self.file_length = offset + len(data)
@@ -54,6 +62,7 @@ class LPFile():
         self.w_lock.acquire(True)
         try:
             if(self.is_open):
+                # if previous write extended file length, reset file length without expensive API call
                 if((self.pending_data) and (len(self.pending_data) + self.pending_offset) == self.file_length):
                     self.file_length = self.prev_length
                 self.pending_data = None
@@ -64,8 +73,10 @@ class LPFile():
     def close(self):
         self.w_lock.acquire(True)
         try:
+            # check if file is already closed
             if(self.is_open == False):
                 raise FileClosedError
+            # write any existing data to file
             if(self.pending_data):
                 self.LPfile.writeat(self.pending_data, self.pending_offset)
             self.is_open = False
