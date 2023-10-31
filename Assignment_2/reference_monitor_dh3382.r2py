@@ -42,11 +42,11 @@ class LPFile():
                 raise SeekPastEndOfFileError
             if(self.pending_data):
                 self.LPfile.writeat(self.pending_data, self.pending_offset)
-            self.pending_data = data
-            self.pending_offset = offset
             if(offset + len(data) >= self.file_length):
                 self.prev_length = self.file_length
                 self.file_length = offset + len(data)
+            self.pending_data = data
+            self.pending_offset = offset
         finally:
             self.w_lock.release()
 
